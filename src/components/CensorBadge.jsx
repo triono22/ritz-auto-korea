@@ -10,9 +10,9 @@ export const CensorBadge = ({ x, y }) => {
       left: `${x}%`,
       transform: 'translate(-50%, -50%)',
       backgroundColor: '#0a0f1d',
-      border: '2px solid var(--accent-cyan)',
-      borderRadius: '4px',
-      padding: '4px 12px',
+      border: '1.5px solid var(--accent-cyan)',
+      borderRadius: '3px',
+      padding: '2px 8px',
       zIndex: 10,
       display: 'flex',
       alignItems: 'center',
@@ -23,7 +23,7 @@ export const CensorBadge = ({ x, y }) => {
     }}>
       <span style={{
         fontFamily: "'Outfit', sans-serif",
-        fontSize: '1.2rem',
+        fontSize: '0.8rem',
         fontWeight: 900,
         letterSpacing: '0.05em',
         lineHeight: 1,

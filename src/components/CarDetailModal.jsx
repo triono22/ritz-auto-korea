@@ -76,11 +76,11 @@ export const CarDetailModal = ({ car, onClose }) => {
         </button>
 
         {/* Gallery Image Display */}
-        <div style={{ position: 'relative', height: '380px', background: '#050810' }}>
+        <div style={{ position: 'relative', height: '320px', background: '#050810', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <img
             src={images[activeImageIndex]}
             alt={car.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
           />
 
           {/* Watermark */}
