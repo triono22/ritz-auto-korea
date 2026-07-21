@@ -76,30 +76,43 @@ export const CarDetailModal = ({ car, onClose }) => {
         </button>
 
         {/* Gallery Image Display */}
-        <div style={{ position: 'relative', height: '320px', background: '#050810', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img
-            src={images[activeImageIndex]}
-            alt={car.title}
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          />
-
-          {/* Watermark */}
-          <WatermarkOverlay size="medium" />
-
-          {/* Smart Censor Overlay */}
-          {car.censorData && car.censorData[activeImageIndex] && (
-            <CensorBadge x={car.censorData[activeImageIndex].x} y={car.censorData[activeImageIndex].y} />
-          )}
-
+        <div style={{ position: 'relative', height: '320px', background: '#050810', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          
           {/* Badges Overlay */}
-          <div style={{ position: 'absolute', top: '20px', left: '20px', display: 'flex', gap: '0.6rem' }}>
+          <div style={{ position: 'absolute', top: '20px', left: '20px', display: 'flex', gap: '0.6rem', zIndex: 12 }}>
             <span className={`status-badge ${isSold ? 'sold' : 'available'}`}>
-              {isSold ? 'SOLD / RESERVED' : 'AVAILABLE FOR EXPATS'}
+              {isSold ? <XCircle size={14} /> : <CheckCircle2 size={14} />}
+              {isSold ? 'SOLD OUT' : 'AVAILABLE'}
             </span>
-            <span className="fuel-badge gasoline" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)' }}>
-              <Fuel size={14} color="var(--accent-cyan)" />
-              <strong style={{ color: '#ffffff' }}>{car.fuelType || 'Gasoline'}</strong>
+            <span className="fuel-badge gasoline">
+              <Fuel size={14} /> {car.fuelType || 'Gasoline'}
             </span>
+          </div>
+
+          <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 12 }}>
+            <span style={{
+              background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', color: 'white',
+              padding: '6px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 600
+            }}>
+              {activeImageIndex + 1} / {images.length}
+            </span>
+          </div>
+
+          {/* Tight Image Wrapper */}
+          <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
+            <img
+              src={images[activeImageIndex]}
+              alt={car.title}
+              style={{ maxWidth: '100%', maxHeight: '320px', display: 'block', objectFit: 'contain' }}
+            />
+
+            {/* Watermark */}
+            <WatermarkOverlay size="medium" />
+
+            {/* Smart Censor Overlay */}
+            {car.censorData && car.censorData[activeImageIndex] && (
+              <CensorBadge x={car.censorData[activeImageIndex].x} y={car.censorData[activeImageIndex].y} />
+            )}
           </div>
 
           {/* Image Thumbnails Strip */}

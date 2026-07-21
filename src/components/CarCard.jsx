@@ -57,43 +57,47 @@ export const CarCard = ({
     }}>
       
       {/* Image Container */}
-      <div style={{ position: 'relative', height: '220px', overflow: 'hidden', background: '#050810' }}>
-        <img
-          src={primaryImage}
-          alt={car.title}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transition: 'transform 0.5s ease',
-            filter: isSold ? 'grayscale(40%)' : 'none'
-          }}
-          onMouseOver={e => e.currentTarget.style.transform = 'scale(1.06)'}
-          onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-        />
-        
-        {/* Watermark */}
-        <WatermarkOverlay size="small" />
+      <div style={{ position: 'relative', height: '220px', overflow: 'hidden', background: '#050810', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         
         {/* Status Badge Overlay */}
-        <div style={{ position: 'absolute', top: '14px', left: '14px', zIndex: 2 }}>
+        <div style={{ position: 'absolute', top: '14px', left: '14px', zIndex: 12 }}>
           <span className={`status-badge ${isSold ? 'sold' : 'available'}`}>
             {isSold ? <XCircle size={14} /> : <CheckCircle size={14} />}
             {isSold ? 'SOLD OUT' : 'AVAILABLE'}
           </span>
         </div>
 
-        {/* Smart Censor Overlay for Primary Image */}
-        {car.censorData && car.censorData[0] && (
-          <CensorBadge x={car.censorData[0].x} y={car.censorData[0].y} />
-        )}
-
         {/* Fuel Badge Overlay */}
-        <div style={{ position: 'absolute', top: '14px', right: '14px', zIndex: 2 }}>
+        <div style={{ position: 'absolute', top: '14px', right: '14px', zIndex: 12 }}>
           <span className={getFuelBadgeClass(car.fuelType)}>
-            <Fuel size={12} />
-            {car.fuelType || 'Gasoline'}
+            <Fuel size={13} /> {car.fuelType || 'Gasoline'}
           </span>
+        </div>
+
+        {/* Tight Image Wrapper to align Censor Coordinates accurately */}
+        <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
+          <img
+            src={primaryImage}
+            alt={car.title}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '220px',
+              display: 'block',
+              objectFit: 'contain',
+              transition: 'transform 0.5s ease',
+              filter: isSold ? 'grayscale(40%)' : 'none'
+            }}
+            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.06)'}
+            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+          />
+          
+          {/* Watermark */}
+          <WatermarkOverlay size="small" />
+          
+          {/* Smart Censor Overlay for Primary Image */}
+          {car.censorData && car.censorData[0] && (
+            <CensorBadge x={car.censorData[0].x} y={car.censorData[0].y} />
+          )}
         </div>
 
         {/* Price Tag Overlay */}
