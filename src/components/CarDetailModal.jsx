@@ -3,6 +3,7 @@ import { X, Fuel, Gauge, Calendar, ShieldCheck, MapPin, CheckCircle2, MessageCir
 import { getPublicVehicleCode } from '../utils/codeMasker';
 import { convertDriveUrl } from '../utils/imageUtils';
 import { WatermarkOverlay } from './WatermarkOverlay';
+import { CensorBadge } from './CensorBadge';
 
 export const CarDetailModal = ({ car, onClose }) => {
   if (!car) return null;
@@ -84,6 +85,11 @@ export const CarDetailModal = ({ car, onClose }) => {
 
           {/* Watermark */}
           <WatermarkOverlay size="medium" />
+
+          {/* Smart Censor Overlay */}
+          {car.censorData && car.censorData[activeImageIndex] && (
+            <CensorBadge x={car.censorData[activeImageIndex].x} y={car.censorData[activeImageIndex].y} />
+          )}
 
           {/* Badges Overlay */}
           <div style={{ position: 'absolute', top: '20px', left: '20px', display: 'flex', gap: '0.6rem' }}>

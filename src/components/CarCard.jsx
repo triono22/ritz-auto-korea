@@ -3,6 +3,7 @@ import { Fuel, Gauge, Calendar, Eye, MessageCircle, Edit3, Trash2, CheckCircle, 
 import { getPublicVehicleCode } from '../utils/codeMasker';
 import { convertDriveUrl } from '../utils/imageUtils';
 import { WatermarkOverlay } from './WatermarkOverlay';
+import { CensorBadge } from './CensorBadge';
 
 export const CarCard = ({ 
   car, 
@@ -77,9 +78,15 @@ export const CarCard = ({
         {/* Status Badge Overlay */}
         <div style={{ position: 'absolute', top: '14px', left: '14px', zIndex: 2 }}>
           <span className={`status-badge ${isSold ? 'sold' : 'available'}`}>
-            {isSold ? 'SOLD' : 'AVAILABLE'}
+            {isSold ? <XCircle size={14} /> : <CheckCircle size={14} />}
+            {isSold ? 'SOLD OUT' : 'AVAILABLE'}
           </span>
         </div>
+
+        {/* Smart Censor Overlay for Primary Image */}
+        {car.censorData && car.censorData[0] && (
+          <CensorBadge x={car.censorData[0].x} y={car.censorData[0].y} />
+        )}
 
         {/* Fuel Badge Overlay */}
         <div style={{ position: 'absolute', top: '14px', right: '14px', zIndex: 2 }}>

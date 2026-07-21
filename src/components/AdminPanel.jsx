@@ -37,7 +37,8 @@ export const AdminPanel = ({
     featuresText: '',
     imageUrl1: '',
     imageUrl2: '',
-    imageUrl3: ''
+    imageUrl3: '',
+    censorData: { 0: null, 1: null, 2: null }
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -66,7 +67,8 @@ export const AdminPanel = ({
         featuresText: editingCar.features ? editingCar.features.join(', ') : '',
         imageUrl1: editingCar.images && editingCar.images[0] ? editingCar.images[0] : '',
         imageUrl2: editingCar.images && editingCar.images[1] ? editingCar.images[1] : '',
-        imageUrl3: editingCar.images && editingCar.images[2] ? editingCar.images[2] : ''
+        imageUrl3: editingCar.images && editingCar.images[2] ? editingCar.images[2] : '',
+        censorData: editingCar.censorData || { 0: null, 1: null, 2: null }
       });
       setActiveTab('form');
     }
@@ -75,6 +77,24 @@ export const AdminPanel = ({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCensorClick = (index, e) => {
+    const rect = e.target.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setFormData(prev => ({
+      ...prev,
+      censorData: { ...prev.censorData, [index]: { x, y } }
+    }));
+  };
+
+  const clearCensor = (index, e) => {
+    e.stopPropagation();
+    setFormData(prev => ({
+      ...prev,
+      censorData: { ...prev.censorData, [index]: null }
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -104,7 +124,8 @@ export const AdminPanel = ({
       year: Number(formData.year),
       mileage: formData.mileage ? Number(formData.mileage) : 0,
       features: featuresList,
-      images: imagesArray
+      images: imagesArray,
+      censorData: formData.censorData
     };
 
     if (formData.id) {
@@ -135,6 +156,52 @@ export const AdminPanel = ({
   const previewImg2 = formData.imageUrl2 ? convertDriveUrl(formData.imageUrl2) : null;
   const previewImg3 = formData.imageUrl3 ? convertDriveUrl(formData.imageUrl3) : null;
 
+  const renderPreview = (imgUrl, index) => {
+    if (!imgUrl) return null;
+    return (
+      <div style={{ marginTop: '0.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--accent-gold)' }}>
+            <strong>Smart Censor:</strong> Click on the license plate below to cover it.
+          </span>
+          {formData.censorData[index] && (
+            <button type="button" onClick={(e) => clearCensor(index, e)} className="btn btn-secondary" style={{ padding: '2px 8px', fontSize: '0.7rem' }}>
+              Clear Censor
+            </button>
+          )}
+        </div>
+        <div style={{ position: 'relative', display: 'inline-block', border: '1px solid var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
+          <img 
+            src={imgUrl} 
+            alt="Preview" 
+            style={{ maxHeight: '250px', objectFit: 'contain', display: 'block', cursor: 'crosshair' }}
+            onClick={(e) => handleCensorClick(index, e)}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+          {formData.censorData[index] && (
+            <div style={{
+              position: 'absolute',
+              top: `${formData.censorData[index].y}%`,
+              left: `${formData.censorData[index].x}%`,
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#0a0f1d',
+              border: '2px solid var(--accent-cyan)',
+              borderRadius: '4px',
+              padding: '4px 12px',
+              pointerEvents: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.8)'
+            }}>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.1rem', fontWeight: 900, whiteSpace: 'nowrap' }}>
+                <span style={{ color: '#ffffff' }}>RiTZ</span>
+                <span style={{ color: 'var(--accent-cyan)' }}>AUTO</span>
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div 
@@ -151,7 +218,6 @@ export const AdminPanel = ({
           border: '1px solid rgba(245, 158, 11, 0.4)'
         }}
       >
-        {/* Header Panel Admin */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -169,7 +235,6 @@ export const AdminPanel = ({
           </button>
         </div>
 
-        {/* Tab Selection */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
           <button
             onClick={() => setActiveTab('list')}
@@ -200,7 +265,6 @@ export const AdminPanel = ({
           </button>
         </div>
 
-        {/* TAB 1: LIST MANAGEMENT */}
         {activeTab === 'list' && (
           <div>
             <div style={{
@@ -256,7 +320,6 @@ export const AdminPanel = ({
                           </div>
                         </td>
                         
-                        {/* REAL PLATE (Admin View Only) */}
                         <td style={{ padding: '0.75rem' }}>
                           <span style={{
                             fontSize: '0.85rem',
@@ -271,7 +334,6 @@ export const AdminPanel = ({
                           </span>
                         </td>
 
-                        {/* PUBLIC CODE */}
                         <td style={{ padding: '0.75rem' }}>
                           <span style={{
                             fontSize: '0.85rem',
@@ -351,7 +413,6 @@ export const AdminPanel = ({
           </div>
         )}
 
-        {/* TAB 2: ADD / EDIT FORM */}
         {activeTab === 'form' && (
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
@@ -416,7 +477,6 @@ export const AdminPanel = ({
                 />
               </div>
 
-              {/* FUEL TYPE SELECT */}
               <div className="form-group">
                 <label className="form-label" style={{ color: 'var(--accent-cyan)' }}>
                   ⛽ Fuel Type
@@ -462,7 +522,6 @@ export const AdminPanel = ({
                 </select>
               </div>
 
-              {/* REAL PLATE INPUT */}
               <div className="form-group">
                 <label className="form-label" style={{ color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   🚘 Real Plate Number (Admin Only)
@@ -529,7 +588,6 @@ export const AdminPanel = ({
                 />
               </div>
 
-              {/* MAIN IMAGE URL INPUT */}
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                 <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Image size={15} color="var(--accent-cyan)" /> Main Image URL (Google Drive / Web links supported)
@@ -543,7 +601,6 @@ export const AdminPanel = ({
                   className="form-input"
                 />
                 
-                {/* GOOGLE DRIVE EXPLICIT PUBLIC WARNING NOTIFICATION */}
                 <div style={{
                   background: 'rgba(245, 158, 11, 0.08)',
                   border: '1px solid rgba(245, 158, 11, 0.25)',
@@ -561,24 +618,9 @@ export const AdminPanel = ({
                     <strong>Important for Google Drive Links:</strong> You must set your Google Drive file's sharing permission to <u>&quot;Anyone with the link can view&quot;</u> (Public). If it is set to &quot;Restricted&quot;, the image will not load!
                   </div>
                 </div>
-                
-                {/* Visual Image Preview */}
-                {previewImg1 && (
-                  <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Preview:</span>
-                    <img 
-                      src={previewImg1} 
-                      alt="Main Preview" 
-                      style={{ height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
+                {renderPreview(previewImg1, 0)}
               </div>
 
-                {/* SECOND IMAGE URL INPUT */}
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                 <label className="form-label">Second Image URL (Optional)</label>
                 <input
@@ -589,19 +631,7 @@ export const AdminPanel = ({
                   placeholder="Paste second Google Drive link or standard image link..."
                   className="form-input"
                 />
-                {previewImg2 && (
-                  <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Preview:</span>
-                    <img 
-                      src={previewImg2} 
-                      alt="Secondary Preview" 
-                      style={{ height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
+                {renderPreview(previewImg2, 1)}
               </div>
 
               {/* THIRD IMAGE URL INPUT */}
@@ -615,19 +645,7 @@ export const AdminPanel = ({
                   placeholder="Paste third Google Drive link or standard image link..."
                   className="form-input"
                 />
-                {previewImg3 && (
-                  <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Preview:</span>
-                    <img 
-                      src={previewImg3} 
-                      alt="Third Preview" 
-                      style={{ height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
+                {renderPreview(previewImg3, 2)}
               </div>
 
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
